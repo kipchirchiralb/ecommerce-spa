@@ -10,8 +10,13 @@
     <header>
       <h1>Ecommerce Store</h1>
       <div class="cart">
-        <ion-icon name="cart-outline"></ion-icon>
+        <ion-icon name="cart-outline" id="cart-icon" role="button"></ion-icon>
         <p class="cart-count">0</p>
+        <div class="cart-display hidden" id="cart-display">
+          <h4>Cart</h4>
+          <ul id="cart-output"></ul>
+          <button>Checkout</button>
+        </div>
       </div>
       <div class="user">
         <ion-icon name="person-outline"></ion-icon>

@@ -3,12 +3,13 @@ fetch("https://fakestoreapi.com/products")
   .then((jsondata) => {
     console.log(jsondata);
     buildUI(jsondata);
-    localStorage.setItem("products", JSON.stringify(jsondata));
+    addEventsToButtons();
+    // localStorage.setItem("products", JSON.stringify(jsondata));
   });
 
-  //async
+//async
 
-  // callback functions------------------------------ funcitonal prgramming in js
+// callback functions------------------------------ funcitonal prgramming in js
 
 function buildUI(productsArray) {
   const productsSectionEl = document.getElementById("products");
@@ -38,6 +39,7 @@ function buildUI(productsArray) {
     productPrice.textContent = "KSH. " + product.price;
 
     let addToCartBtn = document.createElement("button");
+    addToCartBtn.setAttribute("id", product.id + "-btn");
     addToCartBtn.classList.add("add-to-cart");
     addToCartBtn.textContent = "Add To Cart";
 
@@ -54,11 +56,67 @@ function buildUI(productsArray) {
   });
 }
 
-// introduction to local storage
-// saving data
-localStorage.setItem("password", "khbsdfkcnglsdnkjs . jfnwbcnnv");
-localStorage.setItem("numbers", [1, 2, 3, 3]);
-// retrieving/getting  data
-console.log(localStorage.getItem("numbers"));
-console.log(localStorage.getItem("password"));
-console.log(localStorage.getItem("pass"));
+let cartList = [];
+
+function checkStorageForCartList() {
+  if (localStorage.getItem("cartlist")) {
+    cartList = JSON.parse(localStorage.getItem("cartlist"));
+  }
+}
+checkStorageForCartList();
+
+// a function that adds even listeners to all add-to-cart buttons
+
+function addEventsToButtons() {
+  document.querySelectorAll(".add-to-cart").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      console.log(e.target);
+      console.log(
+        e.target.parentElement.parentElement.querySelector("h3").textContent
+      );
+      checkStorageForCartList();
+      let newCartItem = {
+        id: e.target.id.split("-")[0],
+        title:
+          e.target.parentElement.parentElement.querySelector("h3").textContent,
+        price: e.target.previousElementSibling.textContent,
+        count: "",
+      };
+      cartList.push(newCartItem);
+      localStorage.setItem("cartlist", JSON.stringify(cartList));
+      // console.log(cartList);
+      updateCartCount();
+    });
+  });
+}
+
+function updateCartCount() {
+  checkStorageForCartList();
+  document.querySelector(".cart-count").textContent = cartList.length;
+}
+updateCartCount();
+
+document.getElementById("cart-icon").addEventListener("click", function () {
+  document.getElementById("cart-display").classList.toggle("hidden");
+  if (!document.getElementById("cart-display").classList.contains("hidden")) {
+    checkStorageForCartList();
+    populateCartDisplay(cartList);
+  }
+});
+
+function populateCartDisplay(list) {
+  let unorderedList = document.getElementById("cart-output");
+  unorderedList.innerHTML = "";
+  list.forEach((product) => {
+    let pLI = document.createElement("li");
+    let pname = document.createElement("p");
+    let pprice = document.createElement("p");
+    pname.textContent = product.title;
+    pprice.textContent = product.price;
+    pLI.append(pname);
+    pLI.append(pprice);
+    unorderedList.append(pLI);
+  });
+}
+
+// localStorage.clear();
